@@ -8,35 +8,35 @@
 import pandas as pd
 import datetime
 
+
 class Update_today(object):
 	symbol = ''
 	file_path = 'F:/Stock_Data/stock_data/'
 	
-	
 	def __init__(self, symbol):
 		self.symbol = symbol
-		
+	
 	def update(self, recode):
 		try:
 			self.data_df = pd.read_csv(self.file_path + symbol + '.csv',
-		                           encoding='gbk')
+			                           encoding='gbk')
 			trade_cal_df = pd.read_csv('F:/Stock_Data/trade_cal.csv')
 			today = datetime.date.strftime(datetime.date.today(), '%Y-%m-%d')
-		
+			
 			last_date = max(self.data_df['日期'])
 			last_trade_date = trade_cal_df[trade_cal_df['cal_date'] == today]['pretrade_date'].values[0]
-		
+			
 			trade_date = datetime.datetime.strptime(last_date, '%Y-%m-%d') + datetime.timedelta(days=1)
 			trade_date = datetime.date.strftime(trade_date, '%Y-%m-%d')
-		
+			
 			if last_trade_date <= trade_date:
 				print('正在更新{}的数据'.format(self.symbol))
 				self.data_df = self.data_df.sort_values(by='日期')
 				if max(self.data_df['日期'].values) != today:
 					self.data_df = self.data_df.append(Recode(recode).recode,
-				                                   ignore_index=True)
+					                                   ignore_index=True)
 				print(self.data_df)
-					# self.data_df.to_csv(self.file_path + symbol + '.csv', encoding='gbk', index=False)
+			# self.data_df.to_csv(self.file_path + symbol + '.csv', encoding='gbk', index=False)
 			else:
 				print('已经有多天未更新了，请使用get_data重新获取全部数据！')
 		except:
@@ -44,9 +44,11 @@ class Update_today(object):
 			                                   ignore_index=True)
 			print('创建新文件')
 			print(self.data_df)
-		
+
+
 class Recode(object):
 	recode = {}
+	
 	def __init__(self, recode):
 		self.recode['日期'] = datetime.date.strftime(datetime.date.today(), '%Y-%m-%d')
 		self.recode['股票代码'] = recode['SYMBOL']
@@ -63,14 +65,17 @@ class Recode(object):
 		self.recode['成交金额'] = recode['TURNOVER']
 		self.recode['总市值'] = recode['TCAP']
 		self.recode['流通市值'] = recode['MCAP']
-		
-info_df = pd.read_csv('F:/Stock_Data/stock_info.csv',
-                      encoding='gbk')
-for row in info_df.iterrows():
-	symbol = '{:0>6}'.format(row[1]['SYMBOL'])
-	recode = row[1]
-	recode['SYMBOL'] = symbol
-	stock = Update_today(symbol)
-	stock.update(recode)
-	
-	
+
+
+# info_df = pd.read_csv('F:/Stock_Data/stock_info.csv',
+#                       encoding='gbk')
+# for row in info_df.iterrows():
+# 	symbol = '{:0>6}'.format(row[1]['SYMBOL'])
+# 	recode = row[1]
+# 	recode['SYMBOL'] = symbol
+# 	stock = Update_today(symbol)
+# 	stock.update(recode)
+
+
+stock = Update_today('002959')
+stock.update()
